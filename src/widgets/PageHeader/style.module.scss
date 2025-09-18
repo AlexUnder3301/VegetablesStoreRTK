@@ -1,0 +1,14 @@
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 12px;
+    background-color: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    width: 100%;
+    max-width: 2560px;
+}
