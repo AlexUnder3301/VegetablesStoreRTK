@@ -4,9 +4,11 @@ import { Button } from '@mantine/core';
 import { AppContext } from '../../shared/utils/context';
 import { useContext, useEffect, useState } from 'react';
 import classNames from 'classnames';
+import { useTypedSelector } from '../../shared/hooks/redux';
 
 const CartButton = () => { 
-  const { handleCartModalSwitch, cart } = useContext(AppContext)
+  const { handleCartModalSwitch} = useContext(AppContext)
+  const cart = useTypedSelector(state => state.cart.cart)
   const [isHidden, setIsHidden] = useState('count-items--hidden')
  
   useEffect(() => {

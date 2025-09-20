@@ -1,37 +1,26 @@
 import { useState, useEffect } from 'react'
 import './styles/App.css'
-import ky from 'ky'
 import ItemCard from './entities/ItemCard/ItemCard'
 import PageHeader from '../widgets/PageHeader/PageHeader'
 import { AppContext } from '../shared/utils/context'
 import CartModal from '../widgets/CartModal/CartModal'
 import fakeData from '../shared/utils/fakeData'
-import type { DataItemType, CardDataItemType } from '../shared/utils/types'
+import type { CardDataItemType } from '../shared/utils/types'
+import { useTypedDispatch, useTypedSelector } from '../shared/hooks/redux'
+import { addToCart } from '../store/cartSlice'
+import { getData } from '../store/dataSlice'
 
 
 function App() {
-  const [data, setData] = useState<DataItemType[]>([])
-  const [cart, setCart] = useState<CardDataItemType[]>([])
-  const [totalPrice, setTotalPrice] = useState<number>(0);
+  const { data, isLoading, error } = useTypedSelector(state => state.data)
+  const cart = useTypedSelector((state) => state.cart.cart)
+
+  const dispatch = useTypedDispatch()
+
   const [showCartModal, setShowCartModal] = useState<boolean>(false)
-  const [isLoading, setIsLoading] = useState<boolean>(true)
-  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const getData = async () => {
-      try {
-        setIsLoading(true);
-        const response = await ky.get('https://res.cloudinary.com/sivadass/raw/upload/v1535817394/json/products.json').json() as DataItemType[];
-        setData(response);
-      } catch (err) {
-        setError('Failed to fetch data')
-        console.error('Error fetching data:', err)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    getData()
+    dispatch(getData())
   }, [])
 
   const handleCartModalSwitch = () => {
@@ -50,17 +39,8 @@ function App() {
         quantity: product.quantity
       };
     }
-
-    setCart(newCart)
+    dispatch(addToCart(newCart))
   }
-
-  useEffect(() => {
-    const newPrice = cart.reduce((sum: number, current: CardDataItemType) => {
-      return sum + (current.price * current.quantity)
-    }, 0);
-    setTotalPrice(newPrice)
-  }, [cart])
-
 
   if (error) {
     return (
@@ -77,7 +57,7 @@ function App() {
       handleCartModalSwitch: handleCartModalSwitch
     }}>
       <PageHeader />
-      {showCartModal && <CartModal cart={cart} setCart={setCart} totalPrice={totalPrice} />}
+      {showCartModal && <CartModal />}
       <div className='shop-body'>
         <h2>Catalog</h2>
         <div className='card-container'>

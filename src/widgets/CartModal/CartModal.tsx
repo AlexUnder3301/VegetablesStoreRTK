@@ -3,17 +3,15 @@ import Stepper from '../../shared/ui/Stepper/Stepper'
 import { Image} from '@mantine/core'
 import EmptyCart from '../../assets/cart-empty.svg?react'
 import classNames from 'classnames'
-import type { CardDataItemType } from '../../shared/utils/types'
-
-interface CartModalProps {
-    cart: CardDataItemType[],
-    totalPrice: number
-    setCart: React.Dispatch<React.SetStateAction<CardDataItemType[]>>
-}
+import {useTypedDispatch, useTypedSelector} from '../../shared/hooks/redux'
+import { addToCart } from '../../store/cartSlice'
 
 
+const CartModal = () => {
+    const cart = useTypedSelector((state => state.cart.cart))
+    const totalPrice = useTypedSelector(state => state.cart.totalPrice)
+    const dispatch = useTypedDispatch()
 
-const CartModal = ({ cart, setCart, totalPrice }: CartModalProps) => {
     if (cart.length === 0) {
         return (
             <div className={classNames(styles['modal-container'], styles['modal-container--empty'])}>
@@ -45,9 +43,12 @@ const CartModal = ({ cart, setCart, totalPrice }: CartModalProps) => {
                                     if (count === 0) {
                                         newCart.splice(newQuantitiyItemId, 1)
                                     } else {
-                                        newCart[newQuantitiyItemId].quantity = count
+                                        newCart[newQuantitiyItemId] = {
+                                            ...newCart[newQuantitiyItemId],
+                                            quantity: count
+                                        }
                                     }
-                                    setCart(newCart)
+                                    dispatch(addToCart(newCart))
                                 }} />
                             </div>
                         </li>

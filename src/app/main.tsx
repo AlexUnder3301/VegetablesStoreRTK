@@ -3,6 +3,8 @@ import { createRoot } from 'react-dom/client'
 import './styles/index.css'
 import App from './App.tsx'
 import { createTheme, MantineProvider } from '@mantine/core';
+import { Provider } from 'react-redux';
+import store from '../store/index.ts'
 
 const theme = createTheme({
   colors: {
@@ -36,8 +38,11 @@ const theme = createTheme({
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <MantineProvider theme={theme}>
-      <App />
-    </MantineProvider>
+    <Provider store={store}>
+      <MantineProvider theme={theme}>
+        <App />
+      </MantineProvider>
+    </Provider>
+    
   </StrictMode>,
 )
